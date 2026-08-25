@@ -30,7 +30,7 @@ Proyecto Cafetería Británico/
     ├── panel.html                 # Vista del panel de administración
     └── pedido.html                # Vista para clientes y toma de pedidos
 
-⚙️ Configuración e Instalación
+##⚙️ Configuración e Instalación
 1. Clonar el repositorio
 Bash
 git clone [https://github.com/Miguel231106-s/proyecto-cafeter-a-brit-nico.git](https://github.com/Miguel231106-s/proyecto-cafeter-a-brit-nico.git)
@@ -55,7 +55,7 @@ node server.js
 3. Ejecutar el Frontend
 Abre directamente los archivos pedido.html o panel.html en tu navegador web de preferencia (o utiliza la extensión Live Server en VS Code).
 
-📱 Funcionalidades
+##📱 Funcionalidades
 Módulo de Pedidos (pedido.html): Selección de productos, resumen de compra y visualización de QR Yape para realizar el pago.
 
 Panel de Control (panel.html): Monitoreo y gestión en tiempo real de los pedidos realizados.
