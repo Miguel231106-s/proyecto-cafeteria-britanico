@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Británico — Panel de pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crema: #FAF3E9;
+    --crema-oscura: #F0E4D3;
+    --cafe-oscuro: #2E2018;
+    --cafe-medio: #5C4433;
+    --marron: #8B5A3C;
+    --marron-oscuro: #6E4429;
+    --mostaza: #D9A441;
+    --verde-ok: #5C7A4E;
+    --azul-prep: #4A7A9E;
+    --rojo-alerta: #B5442E;
+    --borde: #E0CFB8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--crema);
+    color: var(--cafe-oscuro);
+    font-family: 'Work Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--cafe-oscuro);
+    color: var(--crema);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: relative;
+  }
+
+  header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--mostaza), var(--mostaza) 10px,
+      transparent 10px, transparent 20px
+    );
+  }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  header .subt {
+    font-size: 0.78rem;
+    color: var(--mostaza);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  #estado-conexion {
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--crema);
+    opacity: 0.85;
+  }
+
+  .punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--verde-ok);
+  }
+
+  .punto.error { background: var(--rojo-alerta); }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    border-radius: 30px;
+    border: 1.5px solid var(--borde);
+    background: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+  }
+
+  .tab.activo {
+    background: var(--cafe-oscuro);
+    color: var(--crema);
+    border-color: var(--cafe-oscuro);
+  }
+
+  .tab .contador {
+    background: var(--mostaza);
+    color: var(--cafe-oscuro);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+  }
+
+  .tab.activo .contador {
+    background: var(--mostaza);
+  }
+
+  #lista-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pedido-card {
+    background: white;
+    border: 1px solid var(--borde);
+    border-left: 5px solid var(--mostaza);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .pedido-card.en_preparacion { border-left-color: var(--azul-prep); }
+  .pedido-card.listo { border-left-color: var(--verde-ok); }
+  .pedido-card.entregado { border-left-color: var(--cafe-medio); opacity: 0.7; }
+
+  .pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .pedido-header h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+  }
+
+  .pedido-header .hora-recojo {
+    font-size: 0.82rem;
+    color: var(--cafe-medio);
+    margin-top: 2px;
+  }
+
+  .badge-estado {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    background: var(--mostaza);
+    color: var(--cafe-oscuro);
+  }
+
+  .badge-estado.en_preparacion { background: var(--azul-prep); color: white; }
+  .badge-estado.listo { background: var(--verde-ok); color: white; }
+  .badge-estado.entregado { background: var(--cafe-medio); color: white; }
+
+  .pedido-items {
+    font-size: 0.88rem;
+    color: var(--cafe-medio);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .pedido-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pedido-pago {
+    font-size: 0.82rem;
+    color: var(--marron);
+    font-weight: 600;
+  }
+
+  .pedido-total {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .btn-avanzar {
+    background: var(--marron);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-avanzar:hover { background: var(--marron-oscuro); }
+  .btn-avanzar:disabled {
+    background: #C8B8A5;
+    cursor: default;
+  }
+
+  .vacio {
+    text-align: center;
+    color: var(--cafe-medio);
+    font-size: 0.9rem;
+    padding: 50px 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>El Británico</h1>
+    <p class="subt">Panel de pedidos</p>
+  </div>
+  <div id="estado-conexion">
+    <span class="punto" id="punto-conexion"></span>
+    <span id="texto-conexion">Conectando...</span>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <div class="tab activo" data-estado="pendiente" onclick="cambiarTab('pendiente')">
+      Pendientes <span class="contador" id="count-pendiente">0</span>
+    </div>
+    <div class="tab" data-estado="en_preparacion" onclick="cambiarTab('en_preparacion')">
+      En preparación <span class="contador" id="count-en_preparacion">0</span>
+    </div>
+    <div class="tab" data-estado="listo" onclick="cambiarTab('listo')">
+      Listos <span class="contador" id="count-listo">0</span>
+    </div>
+    <div class="tab" data-estado="entregado" onclick="cambiarTab('entregado')">
+      Entregados <span class="contador" id="count-entregado">0</span>
+    </div>
+  </div>
+
+  <div id="lista-pedidos">
+    <p class="vacio">Cargando pedidos...</p>
+  </div>
+</main>
+
+<script>
+  const API_URL = "http://localhost:3000";
+  const INTERVALO_ACTUALIZACION = 5000; // 5 segundos
+
+  let pedidos = [];
+  let tabActual = "pendiente";
+
+  const siguienteEstado = {
+    pendiente: "en_preparacion",
+    en_preparacion: "listo",
+    listo: "entregado"
+  };
+
+  const textoBoton = {
+    pendiente: "Empezar preparación",
+    en_preparacion: "Marcar como listo",
+    listo: "Marcar como entregado"
+  };
+
+  const nombreEstado = {
+    pendiente: "Pendiente",
+    en_preparacion: "En preparación",
+    listo: "Listo",
+    entregado: "Entregado"
+  };
+
+  function cambiarTab(estado) {
+    tabActual = estado;
+    document.querySelectorAll(".tab").forEach(t => {
+      t.classList.toggle("activo", t.dataset.estado === estado);
+    });
+    renderizarPedidos();
+  }
+
+  async function cargarPedidos() {
+    try {
+      const res = await fetch(`${API_URL}/pedidos`);
+      if (!res.ok) throw new Error("Error al cargar pedidos");
+      pedidos = await res.json();
+      marcarConectado(true);
+      actualizarContadores();
+      renderizarPedidos();
+    } catch (err) {
+      marcarConectado(false);
+    }
+  }
+
+  function marcarConectado(ok) {
+    document.getElementById("punto-conexion").classList.toggle("error", !ok);
+    document.getElementById("texto-conexion").textContent = ok
+      ? "Conectado"
+      : "Sin conexión al servidor";
+  }
+
+  function actualizarContadores() {
+    ["pendiente", "en_preparacion", "listo", "entregado"].forEach(estado => {
+      const cantidad = pedidos.filter(p => p.estado === estado).length;
+      document.getElementById(`count-${estado}`).textContent = cantidad;
+    });
+  }
+
+  function renderizarPedidos() {
+    const contenedor = document.getElementById("lista-pedidos");
+    const filtrados = pedidos.filter(p => p.estado === tabActual);
+
+    if (filtrados.length === 0) {
+      contenedor.innerHTML = `<p class="vacio">No hay pedidos ${nombreEstado[tabActual].toLowerCase()} por ahora.</p>`;
+      return;
+    }
+
+    contenedor.innerHTML = "";
+    filtrados.forEach(pedido => {
+      const itemsTexto = pedido.items
+        .map(i => `${i.cantidad}x ${i.nombre}`)
+        .join(" · ");
+
+      const card = document.createElement("div");
+      card.className = `pedido-card ${pedido.estado}`;
+      card.innerHTML = `
+        <div class="pedido-header">
+          <div>
+            <h3>#${pedido.id} — ${pedido.nombre_alumno}</h3>
+            <p class="hora-recojo">Recojo: ${pedido.hora_recojo}</p>
+          </div>
+          <span class="badge-estado ${pedido.estado}">${nombreEstado[pedido.estado]}</span>
+        </div>
+        <p class="pedido-items">${itemsTexto}</p>
+        <div class="pedido-footer">
+          <div>
+            <span class="pedido-pago">${pedido.metodo_pago === "yape" ? "📱 Yape" : "💵 Efectivo"}</span>
+            <span class="pedido-total"> · S/ ${parseFloat(pedido.monto_total).toFixed(2)}</span>
+          </div>
+          ${
+            pedido.estado === "entregado"
+              ? ""
+              : `<button class="btn-avanzar" onclick="avanzarEstado(${pedido.id}, '${siguienteEstado[pedido.estado]}')">${textoBoton[pedido.estado]}</button>`
+          }
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+  }
+
+  async function avanzarEstado(pedidoId, nuevoEstado) {
+    try {
+      const res = await fetch(`${API_URL}/pedidos/${pedidoId}/estado`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+      if (!res.ok) throw new Error("No se pudo actualizar el pedido");
+      await cargarPedidos();
+    } catch (err) {
+      alert("No se pudo actualizar el pedido. Intenta de nuevo.");
+    }
+  }
+
+  cargarPedidos();
+  setInterval(cargarPedidos, INTERVALO_ACTUALIZACION);
+</script>
+
+</body>
+</html>

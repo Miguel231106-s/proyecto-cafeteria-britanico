@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Británico — Haz tu pedido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crema: #FAF3E9;
+    --crema-oscura: #F0E4D3;
+    --cafe-oscuro: #2E2018;
+    --cafe-medio: #5C4433;
+    --marron: #8B5A3C;
+    --marron-oscuro: #6E4429;
+    --mostaza: #D9A441;
+    --verde-ok: #5C7A4E;
+    --rojo-alerta: #B5442E;
+    --borde: #E0CFB8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--crema);
+    color: var(--cafe-oscuro);
+    font-family: 'Work Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  header {
+    background: var(--cafe-oscuro);
+    color: var(--crema);
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+  }
+
+  header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--mostaza), var(--mostaza) 10px,
+      transparent 10px, transparent 20px
+    );
+  }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 2.1rem;
+    letter-spacing: 0.5px;
+  }
+
+  header p {
+    margin-top: 6px;
+    font-size: 0.88rem;
+    color: var(--mostaza);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 18px;
+  }
+
+  section {
+    margin-bottom: 28px;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--marron);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  #menu-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .producto-card {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .producto-info h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--cafe-oscuro);
+  }
+
+  .producto-info p {
+    font-size: 0.82rem;
+    color: var(--cafe-medio);
+    margin-top: 2px;
+  }
+
+  .producto-precio {
+    font-size: 0.85rem;
+    color: var(--marron);
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .cantidad-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .cantidad-control button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid var(--marron);
+    background: var(--crema);
+    color: var(--marron);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+
+  .cantidad-control button:hover {
+    background: var(--marron);
+    color: white;
+  }
+
+  .cantidad-control span {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cafe-medio);
+    margin-bottom: 6px;
+  }
+
+  input[type="text"], input[type="time"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.95rem;
+    background: white;
+    color: var(--cafe-oscuro);
+    margin-bottom: 18px;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--marron);
+  }
+
+  .metodo-pago {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .metodo-opcion {
+    flex: 1;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    background: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+  }
+
+  .metodo-opcion.activo {
+    border-color: var(--marron);
+    background: var(--crema-oscura);
+    color: var(--marron-oscuro);
+  }
+
+  #yape-box {
+    display: none;
+    background: white;
+    border: 1.5px dashed var(--borde);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  #yape-box img {
+    width: 140px;
+    height: 140px;
+    background: var(--crema-oscura);
+    border-radius: 8px;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #yape-box p {
+    font-size: 0.82rem;
+    color: var(--cafe-medio);
+    margin-bottom: 8px;
+  }
+
+  input[type="file"] {
+    width: 100%;
+    font-size: 0.85rem;
+    margin-top: 8px;
+  }
+
+  .resumen {
+    background: var(--cafe-oscuro);
+    color: var(--crema);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  .resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(250,243,233,0.2);
+  }
+
+  .resumen-fila:last-child { border-bottom: none; }
+
+  .resumen-total {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--mostaza);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(250,243,233,0.3);
+  }
+
+  #btn-enviar {
+    width: 100%;
+    padding: 16px;
+    background: var(--marron);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Work Sans', sans-serif;
+    transition: background 0.15s;
+  }
+
+  #btn-enviar:hover { background: var(--marron-oscuro); }
+  #btn-enviar:disabled { background: #C8B8A5; cursor: not-allowed; }
+
+  #mensaje-error {
+    display: none;
+    background: #FBE4DE;
+    color: var(--rojo-alerta);
+    border: 1px solid var(--rojo-alerta);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  /* Pantalla de confirmación */
+  #pantalla-confirmacion {
+    display: none;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .ticket {
+    background: white;
+    border-radius: 4px;
+    padding: 24px 22px;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(46,32,24,0.12);
+    margin: 24px 0;
+  }
+
+  .ticket::before, .ticket::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 10px;
+    background-image: radial-gradient(circle, var(--crema) 5px, transparent 5px);
+    background-size: 16px 10px;
+    background-repeat: repeat-x;
+  }
+
+  .ticket::before { top: -5px; }
+  .ticket::after { bottom: -5px; transform: rotate(180deg); }
+
+  .ticket h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+
+  .ticket-sub {
+    font-size: 0.78rem;
+    color: var(--cafe-medio);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .ticket-linea {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    padding: 5px 0;
+  }
+
+  .ticket-divisor {
+    border-top: 1.5px dashed var(--borde);
+    margin: 12px 0;
+  }
+
+  .ticket-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--marron-oscuro);
+  }
+
+  .estado-badge {
+    display: inline-block;
+    background: var(--mostaza);
+    color: var(--cafe-oscuro);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+  }
+
+  #btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px;
+    background: #3D8B5F;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  #btn-nuevo-pedido {
+    display: block;
+    margin: 16px auto 0;
+    background: none;
+    border: none;
+    color: var(--marron);
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .vacio {
+    text-align: center;
+    color: var(--cafe-medio);
+    font-size: 0.88rem;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>El Británico</h1>
+  <p>Pide sin la cola · Recoge a tu hora</p>
+</header>
+
+<main id="pantalla-pedido">
+  <div id="mensaje-error"></div>
+
+  <section>
+    <p class="eyebrow">Menú del día</p>
+    <div id="menu-lista">
+      <p class="vacio">Cargando menú...</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Tus datos</p>
+    <label for="nombre">Nombre completo</label>
+    <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
+
+    <label for="hora">Hora estimada de recojo</label>
+    <input type="time" id="hora">
+  </section>
+
+  <section>
+    <p class="eyebrow">Método de pago</p>
+    <div class="metodo-pago">
+      <div class="metodo-opcion activo" data-metodo="efectivo" onclick="seleccionarMetodo('efectivo')">💵 Efectivo</div>
+      <div class="metodo-opcion" data-metodo="yape" onclick="seleccionarMetodo('yape')">📱 Yape</div>
+    </div>
+
+    <div id="yape-box">
+      <p>Escanea y paga, luego sube tu captura como comprobante</p>
+      <img src="img/qr-yape.png" alt="Código QR de Yape para pagar" style="width:160px;height:auto;border-radius:8px;margin:10px auto;display:block;box-shadow:0 4px 12px rgba(46,32,24,0.15);">
+      <input type="file" id="comprobante" accept="image/*">
+    </div>
+  </section>
+
+  <section id="resumen-section" style="display:none;">
+    <p class="eyebrow">Resumen del pedido</p>
+    <div class="resumen" id="resumen-contenido"></div>
+  </section>
+
+  <button id="btn-enviar" onclick="enviarPedido()">Confirmar pedido</button>
+</main>
+
+<div id="pantalla-confirmacion">
+  <p class="eyebrow" style="text-align:center;">¡Pedido enviado!</p>
+  <div class="ticket" id="ticket-contenido"></div>
+  <a href="#" id="btn-whatsapp" target="_blank">
+    <span>📲</span> Compartir con la cafetería
+  </a>
+  <button id="btn-nuevo-pedido" onclick="location.reload()">Hacer otro pedido</button>
+</div>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  let productos = [];
+  let cantidades = {};
+  let metodoPago = "efectivo";
+  let ultimoPedido = null;
+
+  // Cargar el menú desde el backend
+  async function cargarMenu() {
+    const contenedor = document.getElementById("menu-lista");
+    try {
+      const res = await fetch(`${API_URL}/productos`);
+      if (!res.ok) throw new Error("No se pudo cargar el menú");
+      productos = await res.json();
+
+      if (productos.length === 0) {
+        contenedor.innerHTML = `<p class="vacio">No hay productos disponibles en este momento.</p>`;
+        return;
+      }
+
+      contenedor.innerHTML = "";
+      productos.forEach(p => {
+        cantidades[p.id] = 0;
+        const card = document.createElement("div");
+        card.className = "producto-card";
+        card.innerHTML = `
+          <div class="producto-info">
+            <h3>${p.nombre}</h3>
+            <p>${p.descripcion || ""}</p>
+            <span class="producto-precio">S/ ${parseFloat(p.precio).toFixed(2)}</span>
+          </div>
+          <div class="cantidad-control">
+            <button onclick="cambiarCantidad(${p.id}, -1)">−</button>
+            <span id="cant-${p.id}">0</span>
+            <button onclick="cambiarCantidad(${p.id}, 1)">+</button>
+          </div>
+        `;
+        contenedor.appendChild(card);
+      });
+    } catch (err) {
+      contenedor.innerHTML = `<p class="vacio">No se pudo conectar con el servidor. Verifica que el backend esté corriendo.</p>`;
+    }
+  }
+
+  function cambiarCantidad(id, delta) {
+    cantidades[id] = Math.max(0, (cantidades[id] || 0) + delta);
+    document.getElementById(`cant-${id}`).textContent = cantidades[id];
+    actualizarResumen();
+  }
+
+  function seleccionarMetodo(metodo) {
+    metodoPago = metodo;
+    document.querySelectorAll(".metodo-opcion").forEach(el => {
+      el.classList.toggle("activo", el.dataset.metodo === metodo);
+    });
+    document.getElementById("yape-box").style.display = metodo === "yape" ? "block" : "none";
+  }
+
+  function actualizarResumen() {
+    const seccion = document.getElementById("resumen-section");
+    const contenido = document.getElementById("resumen-contenido");
+    const items = productos.filter(p => cantidades[p.id] > 0);
+
+    if (items.length === 0) {
+      seccion.style.display = "none";
+      return;
+    }
+
+    seccion.style.display = "block";
+    let total = 0;
+    let html = "";
+    items.forEach(p => {
+      const subtotal = p.precio * cantidades[p.id];
+      total += subtotal;
+      html += `<div class="resumen-fila"><span>${cantidades[p.id]}x ${p.nombre}</span><span>S/ ${subtotal.toFixed(2)}</span></div>`;
+    });
+    html += `<div class="resumen-total"><span>Total</span><span>S/ ${total.toFixed(2)}</span></div>`;
+    contenido.innerHTML = html;
+  }
+
+  function mostrarError(msg) {
+    const el = document.getElementById("mensaje-error");
+    el.textContent = msg;
+    el.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function ocultarError() {
+    document.getElementById("mensaje-error").style.display = "none";
+  }
+
+  async function enviarPedido() {
+    ocultarError();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const hora = document.getElementById("hora").value;
+    const items = productos
+      .filter(p => cantidades[p.id] > 0)
+      .map(p => ({ producto_id: p.id, cantidad: cantidades[p.id] }));
+
+    if (!nombre) return mostrarError("Escribe tu nombre completo.");
+    if (!hora) return mostrarError("Selecciona la hora estimada de recojo.");
+    if (items.length === 0) return mostrarError("Agrega al menos un producto a tu pedido.");
+
+    const btn = document.getElementById("btn-enviar");
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+
+    try {
+      const res = await fetch(`${API_URL}/pedidos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre_alumno: nombre,
+          hora_recojo: hora,
+          metodo_pago: metodoPago,
+          items: items
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "No se pudo enviar el pedido");
+      }
+
+      const data = await res.json();
+      ultimoPedido = { ...data, nombre, hora, metodoPago, items: productos.filter(p => cantidades[p.id] > 0) };
+      mostrarConfirmacion();
+
+    } catch (err) {
+      mostrarError(err.message || "Ocurrió un error al enviar tu pedido. Intenta de nuevo.");
+      btn.disabled = false;
+      btn.textContent = "Confirmar pedido";
+    }
+  }
+
+  function mostrarConfirmacion() {
+    document.getElementById("pantalla-pedido").style.display = "none";
+    document.getElementById("pantalla-confirmacion").style.display = "block";
+
+    const ticket = document.getElementById("ticket-contenido");
+    let lineas = "";
+    ultimoPedido.items.forEach(p => {
+      lineas += `<div class="ticket-linea"><span>${cantidades[p.id]}x ${p.nombre}</span><span>S/ ${(p.precio * cantidades[p.id]).toFixed(2)}</span></div>`;
+    });
+
+    ticket.innerHTML = `
+      <h2>Pedido #${ultimoPedido.pedido_id}</h2>
+      <p class="ticket-sub">${ultimoPedido.nombre} · Recojo ${ultimoPedido.hora}</p>
+      ${lineas}
+      <div class="ticket-divisor"></div>
+      <div class="ticket-total"><span>Total</span><span>S/ ${parseFloat(ultimoPedido.monto_total).toFixed(2)}</span></div>
+      <div class="ticket-divisor"></div>
+      <p style="font-size:0.8rem;color:var(--cafe-medio);">Pago: ${ultimoPedido.metodoPago === "yape" ? "Yape (comprobante adjunto)" : "Efectivo al recoger"}</p>
+      <span class="estado-badge">Pendiente</span>
+    `;
+
+    let mensaje = `Hola, soy ${ultimoPedido.nombre}, hice un pedido con el número de orden #${ultimoPedido.pedido_id}.\n\n`;
+    mensaje += `Pedido:\n`;
+    ultimoPedido.items.forEach(p => {
+      mensaje += `- ${cantidades[p.id]}x ${p.nombre}\n`;
+    });
+    mensaje += `\nTotal: S/ ${parseFloat(ultimoPedido.monto_total).toFixed(2)}\n`;
+    mensaje += `Recojo: ${ultimoPedido.hora}\n`;
+    mensaje += `Pago: ${ultimoPedido.metodoPago === "yape" ? "Yape" : "Efectivo al recoger"}`;
+
+    document.getElementById("btn-whatsapp").href = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+  }
+
+  cargarMenu();
+</script>
+
+</body>
+</html>
